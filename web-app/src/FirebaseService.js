@@ -18,10 +18,7 @@ firebase.initializeApp(firebaseConfig);
 const uploadFile = (file, fileId, setFileUploadProgress, setFileUrl) => {
   const storageRef = firebase.storage().ref();
 
-  const fileExtension = file.name.split(".").slice(-1)[0];
-  const uploadTask = storageRef
-    .child(`input/${fileId}.${fileExtension}`)
-    .put(file);
+  const uploadTask = storageRef.child(`input/${fileId}`).put(file);
 
   // Register three observers:
   // 1. 'state_changed' observer, called any time the state changes
