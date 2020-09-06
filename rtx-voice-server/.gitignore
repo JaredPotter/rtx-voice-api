@@ -1,1 +1,8 @@
 node_modules/
+
+*-firebase-adminsdk-*
+
+test
+
+audio_input/*
+audio_output/*
