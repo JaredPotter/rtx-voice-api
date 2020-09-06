@@ -43,7 +43,8 @@ function App() {
         );
         return;
       }
-      const fileId = uuidv4();
+      const fileExtension = file.name.split(".").slice(-1)[0];
+      const fileId = `${uuidv4()}.${fileExtension}`;
       setFileId(fileId);
       uploadFile(file, fileId, setFileUploadProgress, setFileUrl);
     }
@@ -117,7 +118,7 @@ function App() {
         </h1>
         <h1>
           We'll email you a download link to <code>{email}</code> once
-          processing is complplete.
+          processing is complete.
         </h1>
       </div>
     </div>
