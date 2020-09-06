@@ -71,11 +71,15 @@ function App() {
           type="file"
           ref={inputFileElement}
           onChange={handleFileChange}
-          accept="audio/m4a, audio/aiff, audio/wav, audio/mpeg, 	application/ogg"
+          accept="audio/x-m4a,,audio/wav,audio/mpeg"
         />
+        {/* audio/aiff, application/ogg */}
         <p>
-          Allowed file types: <code>.m4a</code>, <code>.aiff</code>,
-          <code>.wav</code>, <code>.mp3</code>,<code>.ogg</code>
+          Allowed file types: <code>.m4a</code>, <code>.wav</code>,{" "}
+          <code>.mp3</code>
+        </p>
+        <p>
+          Coming Soon: <code>.ogg</code>, <code>.aiff</code>
         </p>
         <p>Max file size: {maxFileSizeMegaBytes / 1000000} MB</p>
       </div>
