@@ -1,0 +1,59 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-container .title {
+  width: 6.5rem;
+  text-align: center;
+}
+
+.app-container .subtitle {
+  width: 20rem;
+  text-align: center;
+}
+
+.app-container .get-started-button {
+  width: 20rem;
+  height: 5rem;
+  font-size: 2rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  background: #2ea44f;
+  color: white;
+  outline: 0;
+  box-shadow: 0.25rem 0.25rem 0.25rem black;
+}
+
+.app-container .get-started-button:hover {
+  opacity: 0.75;
+}
+
+.stage-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-progress-box {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.email-form {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  padding: 1rem;
+}
+
+.email-form label {
+  margin-bottom: 1rem;
+}
