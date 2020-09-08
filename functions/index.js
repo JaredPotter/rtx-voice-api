@@ -23,12 +23,12 @@ exports.downloadFile = functions.https.onRequest(async (request, response) => {
 
   try {
     const downloadUrl = await getCompletedJob(fileId);
+    response.redirect(downloadUrl);
+    return;
   } catch (error) {
     response.send("NO SUCH FILE EXISTS!");
     return;
   }
-
-  response.send(downloadUrl);
 });
 
 async function getCompletedJob(fileId) {
