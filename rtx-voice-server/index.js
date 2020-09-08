@@ -151,30 +151,33 @@ const processFile = async (fileName) => {
       ];
     }
 
-    console.log(ffmpegFlags);
-    const ffmpeg = spawn("./lib/ffmpeg", ffmpegFlags);
-    ffmpeg.stdout.on("data", (data) => {
-      console.log("FFMPEG: data out");
-      console.log(data.toString());
-    });
-    ffmpeg.stderr.on("data", (data) => {
-      console.log("FFMPEG: error out");
-      console.error(data.toString());
-    });
-
-    const ffplay = spawnSync("ffplay", ["-autoexit", inputFilePath]);
+    const ffplay = spawn("ffplay", ["-autoexit", inputFilePath]);
     console.log("FFPLAY - ENDED");
+
+    console.log(ffmpegFlags);
+    const ffmpeg = spawnSync("./lib/ffmpeg", ffmpegFlags);
 
     return fileDetails;
   }
 };
 
-/*setInterval(() => {
-  fetchQueuedJobs();
-}, 60000);*/
+const miliseconds = 10000;
+
+function start() {
+  setTimeout(async () => {
+    console.log("Fetching Jobs");
+
+    await fetchQueuedJobs();
+    start();
+  }, miliseconds);
+}
+
+start();
 
 const fetchQueuedJobs = async () => {
   const queuedJobs = await getQueuedJobs();
+
+  console.log(`${queuedJobs.length} JOBS FOUND`);
 
   for (const job of queuedJobs) {
     const path = `${INPUT_PATH}/${job.fileId}`;
@@ -199,29 +202,27 @@ const fetchQueuedJobs = async () => {
     try {
       const downloadUrl = await uploadAudioOutputFile(job.fileId);
 
-      // todo: firestore
-      // 1.) add job to 'completedJobs'
-      // add exp date
       const { email, fileId } = await moveToCompletedJobs(
         job,
         fileDetails,
         downloadUrl
       );
-      debugger;
 
       await sendEmail(email, fileId);
-      // todo: send email.
+
       console.log("OUTPUT: " + downloadUrl);
     } catch (error) {
       throw error;
     }
 
     try {
-      debugger;
-      //await deleteAudioInput(job.fileId);
+      await deleteAudioInput(job.fileId);
     } catch (error) {
       throw error;
     }
+
+    fs.unlink(`${INPUT_PATH}/${job.fileId}`);
+    fs.unlink(`${OUTPUT_PATH}/${job.fileId}`);
   }
 };
 
@@ -237,7 +238,7 @@ const fetchQueuedJobs = async () => {
   // }
 })();
 
-sendEmail();
+//sendEmail();
 
 //fetchQueuedJobs();
 
