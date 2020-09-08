@@ -48,11 +48,11 @@ const uploadAudioOutputFile = async (fileName) => {
 const moveToCompletedJobs = async (job, fileDetails, downloadUrl) => {
   const completedJob = {
     ...job,
+    fileUrl: downloadUrl,
   };
-  completedJob.fileUrl = downloadUrl;
+
   const email = completedJob.email;
   delete completedJob.email;
-  delete completedJob.fileId;
   delete completedJob.id;
 
   const completedMoment = moment.utc().unix();
@@ -82,7 +82,7 @@ const moveToCompletedJobs = async (job, fileDetails, downloadUrl) => {
   }
 
   try {
-    //await db.collection("queuedJobs").doc(job.id).delete();
+    await db.collection("queuedJobs").doc(job.id).delete();
   } catch (error) {
     throw error;
   }
@@ -94,7 +94,20 @@ const moveToCompletedJobs = async (job, fileDetails, downloadUrl) => {
 };
 
 const sendEmail = async (email, fileId) => {
+  const urlEncodedFileId = fileId.replace(/\./gi, "%2E");
+  const BASE_URL = `https://us-central1-rtx-voice-api.cloudfunctions.net/downloadFile?fileId=${urlEncodedFileId}`;
+
   try {
+    debugger;
+    const html = `
+    Hello, ${email},
+
+        Your RTX Voice audio file is complete.
+
+        Please click the download like <a href="${BASE_URL}">HERE</a>.
+
+        File will automatically be deleted after 14 days.
+    `;
     await firebase
       .firestore()
       .collection("mail")
@@ -103,7 +116,7 @@ const sendEmail = async (email, fileId) => {
         message: {
           subject: "RTX VOICE API - FILE DELIVERY",
           text: "This is the plaintext section of the email body.",
-          html: "This is the <code>HTML</code> section of the email body.",
+          html: html,
         },
       });
     console.log("Queued email for delivery!");
