@@ -109,6 +109,8 @@ const processFile = async (fileName) => {
         outputFilePath,
       ];
     } else if (audioTrack.Format === "PCM" && generalTrack.Format === "Wave") {
+      // todo: support more than 16 big
+      // https://trac.ffmpeg.org/wiki/audio%20types
       ffmpegFlags = [
         "-f",
         "dshow",
@@ -161,7 +163,7 @@ const processFile = async (fileName) => {
   }
 };
 
-const miliseconds = 10000;
+const miliseconds = 60000;
 
 function start() {
   setTimeout(async () => {
