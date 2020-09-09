@@ -93,9 +93,9 @@ function App() {
             type="file"
             ref={inputFileElement}
             onChange={handleFileChange}
-            accept="audio/x-m4a,,audio/wav,audio/mpeg"
+            accept="audio/x-m4a,audio/wav,audio/mpeg,application/ogg"
           />
-          {/* audio/aiff, application/ogg */}
+          {/* audio/aiff, */}
           <p>
             Allowed file types: <code>.m4a</code>, <code>.wav</code>,{" "}
             <code>.mp3</code>
