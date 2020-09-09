@@ -60,7 +60,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1 className="title">RTX VOICE API</h1>
+      <h1 className="title">RTX VOICE API DEMO</h1>
       <h2 className="subtitle">
         Elimate background noise - Fans, Kids, Dogs, Music, TVs, Keyboards, etc
       </h2>
