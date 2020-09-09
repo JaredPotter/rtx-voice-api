@@ -24,7 +24,7 @@ function App() {
     }
 
     createJob(fileUrl, email);
-  }, [fileUrl, submitted]);
+  }, [fileUrl]);
 
   const inputFileElement = React.useRef(null);
 
@@ -64,66 +64,94 @@ function App() {
       <h2 className="subtitle">
         Elimate background noise - Fans, Kids, Dogs, Music, TVs, Keyboards, etc
       </h2>
-      <button className="get-started-button">GET STARTED</button>
 
-      <div className={stage === 0 ? "stage-0" : "stage-0 hidden"}>
-        <input
-          type="file"
-          ref={inputFileElement}
-          onChange={handleFileChange}
-          accept="audio/x-m4a,,audio/wav,audio/mpeg"
-        />
-        {/* audio/aiff, application/ogg */}
-        <p>
-          Allowed file types: <code>.m4a</code>, <code>.wav</code>,{" "}
-          <code>.mp3</code>
-        </p>
-        <p>
-          Coming Soon: <code>.ogg</code>, <code>.aiff</code>
-        </p>
-        <p>Max file size: {maxFileSizeMegaBytes / 1000000} MB</p>
+      <div class="arrow_box">
+        <h1 class="arrow-box-text">
+          1. Upload an Audio file
+          <br />
+          (MP3, WAV, M4A, OGG)
+        </h1>
       </div>
-      <div className={stage === 1 ? "stage-1" : "stage-1 hidden"}>
-        <div className="upload-progress-box">
-          <span>{fileUploadProgress}%</span>
-          <div>
-            0%
-            <progress id="file" value={fileUploadProgress} max="100"></progress>
-            100%
-          </div>
+      <div class="arrow_box">
+        <h1 class="arrow-box-text">
+          2. Enter email (for delivery)
+          <br /> and Click [Submit]
+        </h1>
+      </div>
+      <div class="arrow_box">
+        <h1 class="arrow-box-text">
+          3. Wait for file to process <br /> through RTX Voice
+        </h1>
+      </div>
+      <div class="arrow_box">
+        <h1 class="arrow-box-text">4. Receive download like via email</h1>
+      </div>
+      <div class="get-started-box">
+        <div className="get-started">GET STARTED</div>
+        <div className={stage === 0 ? "stage-0" : "stage-0 hidden"}>
+          <input
+            type="file"
+            ref={inputFileElement}
+            onChange={handleFileChange}
+            accept="audio/x-m4a,,audio/wav,audio/mpeg"
+          />
+          {/* audio/aiff, application/ogg */}
+          <p>
+            Allowed file types: <code>.m4a</code>, <code>.wav</code>,{" "}
+            <code>.mp3</code>
+          </p>
+          <p>
+            Coming Soon: <code>.ogg</code>, <code>.aiff</code>
+          </p>
+          <p>Max file size: {maxFileSizeMegaBytes / 1000000} MB</p>
         </div>
-        <form onSubmit={handleSubmit} className="email-form">
-          <label>
-            Email:
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="bob@google.com"
-            />
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value={optInEmail}
-              onChange={(e) => setOptInEmail(e.target.value)}
-            />
-            Opt In Email to get our future RTX Voice API updates
-          </label>
-          <button type="submit" disabled={!email || !fileUrl}>
-            SUBMIT
-          </button>
-        </form>
-      </div>
-      <div className={stage === 2 ? "stage-2" : "stage-2 hidden"}>
-        <h1>
-          Congratulations! Your audio file has been uploaded and queued for
-          processing.
-        </h1>
-        <h1>
-          We'll email you a download link to <code>{email}</code> once
-          processing is complete.
-        </h1>
+        <div className={stage === 1 ? "stage-1" : "stage-1 hidden"}>
+          <div className="upload-progress-box">
+            <span>{fileUploadProgress}%</span>
+            <div>
+              0%
+              <progress
+                id="file"
+                value={fileUploadProgress}
+                max="100"
+              ></progress>
+              100%
+            </div>
+          </div>
+          <form onSubmit={handleSubmit} className="email-form">
+            <label>
+              Email:
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="bob@google.com"
+              />
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value={optInEmail}
+                onChange={(e) => setOptInEmail(e.target.value)}
+              />
+              Opt In Email to get our future RTX Voice API updates
+            </label>
+            <button type="submit" disabled={!email || !fileUrl}>
+              SUBMIT
+            </button>
+          </form>
+        </div>
+        <div className={stage === 2 ? "stage-2" : "stage-2 hidden"}>
+          <h1>
+            Congratulations! Your audio file has been uploaded and queued for
+            processing.
+          </h1>
+          <h1>
+            We'll email you a download link to <code>{email}</code> once
+            processing is complete. The email will be delivered from{" "}
+            <code>rtxvoiceapi@gmail.com</code>.
+          </h1>
+        </div>
       </div>
     </div>
   );
