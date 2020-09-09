@@ -1,6 +1,10 @@
 import React from "react";
 import "./App.css";
-import { uploadFile, createRtxVoiceJob } from "./FirebaseService";
+import {
+  uploadFile,
+  createRtxVoiceJob,
+  addEmailToList,
+} from "./FirebaseService";
 import { v4 as uuidv4 } from "uuid";
 const maxFileSizeMegaBytes = 20000000;
 
@@ -24,7 +28,7 @@ function App() {
     }
 
     createJob(fileUrl, email);
-  }, [fileUrl]);
+  }, [fileUrl, submitted]);
 
   const inputFileElement = React.useRef(null);
 
@@ -56,6 +60,16 @@ function App() {
     e.preventDefault();
 
     setSubmitted(true);
+
+    if (optInEmail) {
+      addEmailToList(email);
+    }
+  }
+
+  function handleUploadAnotherClick() {
+    setStage(0);
+    setFileUploadProgress(0);
+    inputFileElement.current.value = null;
   }
 
   return (
@@ -65,28 +79,32 @@ function App() {
         Elimate background noise - Fans, Kids, Dogs, Music, TVs, Keyboards, etc
       </h2>
 
-      <div class="arrow_box">
-        <h1 class="arrow-box-text">
+      <div className="arrow_box">
+        <h1 className="arrow-box-text">
           1. Upload an Audio file
           <br />
           (MP3, WAV, M4A, OGG)
         </h1>
       </div>
-      <div class="arrow_box">
-        <h1 class="arrow-box-text">
+      <div className="arrow_box">
+        <h1 className="arrow-box-text">
           2. Enter email (for delivery)
           <br /> and Click [Submit]
         </h1>
       </div>
-      <div class="arrow_box">
-        <h1 class="arrow-box-text">
+      <div className="arrow_box">
+        <h1 className="arrow-box-text">
           3. Wait for file to process <br /> through RTX Voice
         </h1>
       </div>
-      <div class="arrow_box">
-        <h1 class="arrow-box-text">4. Receive download like via email</h1>
+      <div className="arrow_box">
+        <h1 className="arrow-box-text">
+          4. Receive download
+          <br />
+          like via email
+        </h1>
       </div>
-      <div class="get-started-box">
+      <div className="get-started-box">
         <div className="get-started">GET STARTED</div>
         <div className={stage === 0 ? "stage-0" : "stage-0 hidden"}>
           <input
@@ -98,17 +116,17 @@ function App() {
           {/* audio/aiff, */}
           <p>
             Allowed file types: <code>.m4a</code>, <code>.wav</code>,{" "}
-            <code>.mp3</code>
+            <code>.mp3</code>, <code>.ogg</code>
           </p>
           <p>
-            Coming Soon: <code>.ogg</code>, <code>.aiff</code>
+            Coming Soon: <code>.aiff</code>
           </p>
           <p>Max file size: {maxFileSizeMegaBytes / 1000000} MB</p>
         </div>
         <div className={stage === 1 ? "stage-1" : "stage-1 hidden"}>
           <div className="upload-progress-box">
             <span>{fileUploadProgress}%</span>
-            <div>
+            <div className="upload-progress-bar">
               0%
               <progress
                 id="file"
@@ -132,9 +150,14 @@ function App() {
               <input
                 type="checkbox"
                 value={optInEmail}
-                onChange={(e) => setOptInEmail(e.target.value)}
+                onChange={(e) => setOptInEmail(e.target.checked)}
               />
               Opt In Email to get our future RTX Voice API updates
+              <br />
+              <span>
+                We respect your privacy - we will *NOT* give/sell your email to
+                anyone.
+              </span>
             </label>
             <button type="submit" disabled={!email || !fileUrl}>
               SUBMIT
@@ -142,16 +165,51 @@ function App() {
           </form>
         </div>
         <div className={stage === 2 ? "stage-2" : "stage-2 hidden"}>
-          <h1>
+          <h3>
             Congratulations! Your audio file has been uploaded and queued for
             processing.
-          </h1>
-          <h1>
+          </h3>
+          <h3>
             We'll email you a download link to <code>{email}</code> once
             processing is complete. The email will be delivered from{" "}
             <code>rtxvoiceapi@gmail.com</code>.
-          </h1>
+          </h3>
+          <button
+            onClick={handleUploadAnotherClick}
+            className="add-another-button"
+          >
+            Upload Another
+          </button>
         </div>
+      </div>
+      <form
+        action="https://formspree.io/xpzyvooz"
+        method="POST"
+        className="feedback-contact-form"
+      >
+        <h3>
+          Have Feedback?
+          <br />
+          Integrate with RTX Voice API?
+          <br />
+          Say Hello?
+        </h3>
+        <label>
+          Your email:
+          <input type="email" required name="_replyto" />
+        </label>
+        <label>
+          Your message:
+          <textarea required name="message"></textarea>
+        </label>
+
+        <button type="submit" className="add-another-button">
+          Send
+        </button>
+      </form>
+      <div className="created-by">
+        Created by{" "}
+        <a href="https://www.twitter.com/jaredpotter">Jared Potter</a>
       </div>
     </div>
   );
