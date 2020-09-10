@@ -70,6 +70,8 @@ function App() {
   function handleUploadAnotherClick() {
     setStage(0);
     setFileUploadProgress(0);
+    setSubmitted(false);
+    setFileUrl("");
     inputFileElement.current.value = null;
   }
 
