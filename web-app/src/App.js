@@ -21,8 +21,9 @@ function App() {
       if (!fileUrl || !email || !submitted) {
         return;
       }
+      const originalFileName = inputFileElement.current.files[0].name;
 
-      await createRtxVoiceJob(fileUrl, email, fileId);
+      await createRtxVoiceJob(fileUrl, email, fileId, originalFileName);
 
       setStage(2);
     }

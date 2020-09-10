@@ -56,7 +56,7 @@ const uploadFile = (file, fileId, setFileUploadProgress, setFileUrl) => {
   );
 };
 
-const createRtxVoiceJob = async (fileUrl, email, fileId) => {
+const createRtxVoiceJob = async (fileUrl, email, fileId, originalFileName) => {
   const db = firebase.firestore();
   const createdMoment = moment.utc().unix();
   const created = createdMoment.valueOf();
@@ -66,6 +66,7 @@ const createRtxVoiceJob = async (fileUrl, email, fileId) => {
     email,
     created,
     fileId,
+    originalFileName,
   };
 
   return db.collection("queuedJobs").add(payload);
