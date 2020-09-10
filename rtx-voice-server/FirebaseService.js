@@ -13,17 +13,20 @@ const db = firebase.firestore();
 const bucket = firebase.storage().bucket();
 
 const getQueuedJobs = async () => {
-  const snapshot = await db.collection("queuedJobs").get();
+  try {
+    const snapshot = await db.collection("queuedJobs").get();
 
-  const queuedJobs = snapshot.docs.map((doc) => {
-    return { id: doc.id, ...doc.data() };
-  });
+    const queuedJobs = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
 
-  return queuedJobs;
+    return queuedJobs;
+  } catch (error) {
+    // keep on trucking on...
+  }
 };
 
 const uploadAudioOutputFile = async (fileName) => {
-  const uuid = uuidv4();
   try {
     let fileExtension = fileName.split(".").slice(-1)[0];
 
@@ -31,10 +34,22 @@ const uploadAudioOutputFile = async (fileName) => {
       fileExtension = "mpeg";
     }
 
+    let contentType = ``;
+
+    if (
+      fileExtension === "mpeg" ||
+      fileExtension === "aac" ||
+      fileExtension === "m4a"
+    ) {
+      contentType = `audio/${fileExtension}`;
+    } else if (fileExtension === "ogg") {
+      contentType = "application/ogg";
+    }
+
     const [file] = await bucket.upload(`audio_output/${fileName}`, {
       destination: `output/${fileName}`,
       public: true,
-      contentType: "audio/" + fileExtension, // TODO: change to support application/ogg
+      contentType,
     });
 
     const downloadUrl = file.metadata.mediaLink;
@@ -93,33 +108,65 @@ const moveToCompletedJobs = async (job, fileDetails, downloadUrl) => {
   };
 };
 
-const sendEmail = async (email, fileId) => {
+const sendErrorEmail = async (email, originalfileName, errorMessage) => {
+  const subject = `RTX VOICE API - ${originalfileName} - FILE FILED`;
+
+  const html = `
+    Hello ${email},\n\n
+
+        Your RTX Voice audio file FAILED.\n\n
+
+        Reason: ${errorMessage}\n\n
+
+        Please re-submit with a supported file.
+  `;
+
+  try {
+    await _sendEmail(email, subject, html);
+    console.log("Queued email for delivery!");
+  } catch (error) {
+    throw error;
+  }
+};
+
+const sendSuccessEmail = async (email, fileId, originalfileName) => {
   const urlEncodedFileId = fileId.replace(/\./gi, "%2E");
   const BASE_URL = `https://us-central1-rtx-voice-api.cloudfunctions.net/downloadFile?fileId=${urlEncodedFileId}`;
 
+  const subject = `RTX VOICE API - ${originalfileName} - FILE DELIVERY`;
+  const html = `
+    Hello ${email},\n\n
+
+      Your RTX Voice audio file is complete.\n\n
+
+      Please click the download like <a href="${BASE_URL}">HERE</a>.\n\n
+
+      File will automatically be deleted after 14 days.\n\n
+  `;
+
   try {
-    debugger;
-    const html = `
-    Hello, ${email},
-
-        Your RTX Voice audio file is complete.
-
-        Please click the download like <a href="${BASE_URL}">HERE</a>.
-
-        File will automatically be deleted after 14 days.
-    `;
-    await firebase
-      .firestore()
-      .collection("mail")
-      .add({
-        to: email,
-        message: {
-          subject: "RTX VOICE API - FILE DELIVERY",
-          text: "This is the plaintext section of the email body.",
-          html: html,
-        },
-      });
+    await _sendEmail(email, subject, html);
     console.log("Queued email for delivery!");
+  } catch (error) {
+    throw error;
+  }
+};
+
+const _sendEmail = async (
+  email,
+  subject,
+  html,
+  text = "This is the plaintext section of the email body."
+) => {
+  try {
+    await firebase.firestore().collection("mail").add({
+      to: email,
+      message: {
+        subject,
+        text,
+        html,
+      },
+    });
   } catch (error) {
     throw error;
   }
@@ -131,6 +178,14 @@ const deleteAudioInput = async (fileName) => {
   });
 };
 
+const deleteQueuedJob = async (id) => {
+  try {
+    await firebase.firestore().collection("queuedJobs").doc(id).delete();
+  } catch (error) {
+    throw error;
+  }
+};
+
 (async () => {
   await getQueuedJobs();
 })();
@@ -140,5 +195,7 @@ module.exports = {
   uploadAudioOutputFile,
   deleteAudioInput,
   moveToCompletedJobs,
-  sendEmail,
+  sendSuccessEmail,
+  sendErrorEmail,
+  deleteQueuedJob,
 };
